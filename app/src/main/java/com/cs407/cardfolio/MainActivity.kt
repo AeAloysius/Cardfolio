@@ -4,6 +4,7 @@ import android.R.style
 import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.view.Surface
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -49,6 +50,7 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import com.cs407.cardfolio.ui.theme.AppTheme
 import com.cs407.cardfolio.ui.theme.CardfolioTheme
 import androidx.compose.material3.Surface
+import androidx.compose.ui.platform.LocalContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,7 +99,13 @@ fun Cardfolio() {
     var age by remember {mutableStateOf("")}
     val outlineColor = MaterialTheme.colorScheme.outline
     var isEditing by remember { mutableStateOf(true) }
+    val ctx = LocalContext.current
 
+    val nameLabel   = stringResource(R.string.card_name_label)
+    val hobbyLabel  = stringResource(R.string.card_hobby_label)
+    val ageLabel    = stringResource(R.string.card_age_label)
+    val toastPrefix = stringResource(R.string.toast_missing_prefix)
+    val toastSaved  = stringResource(R.string.toast_saved_ok)
 
 
     Box(
@@ -235,14 +243,26 @@ fun Cardfolio() {
 
                     // Show button
                     Button(
-                        onClick = { isEditing = false },
-                        enabled = isEditing // only enabled in editing mode
+                        onClick = {
+                            val missing = buildList {
+                                if (name.isBlank())  add(nameLabel)
+                                if (hobby.isBlank()) add(hobbyLabel)
+                                if (age.isBlank())   add(ageLabel)
+                            }
+
+                            if (missing.isNotEmpty()) {
+                                val msg = "$toastPrefix ${missing.joinToString(" & ")}"
+                                Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show()
+                            } else {
+                                isEditing = false
+                                Toast.makeText(ctx, toastSaved, Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        enabled = isEditing
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = stringResource(id = R.string.button_show)
-                        )
-                        Text(stringResource(id = R.string.button_show))
+                        Icon(Icons.Default.Check, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.button_show)) // OK here; still in composable context
                     }
                 }
 
