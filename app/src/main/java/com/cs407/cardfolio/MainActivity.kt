@@ -14,14 +14,20 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -90,6 +96,7 @@ fun Cardfolio() {
     var hobby by remember { mutableStateOf("") }
     var age by remember {mutableStateOf("")}
     val outlineColor = MaterialTheme.colorScheme.outline
+    var isEditing by remember { mutableStateOf(true) }
 
 
 
@@ -109,6 +116,32 @@ fun Cardfolio() {
                 containerColor = MaterialTheme.colorScheme.surface
             )
         ){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp, end = 12.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                AssistChip(
+                    onClick = { isEditing = !isEditing }, // toggle modes
+                    label = {
+                        Text(
+                            if (isEditing)
+                                stringResource(R.string.chip_editing)
+                            else
+                                stringResource(R.string.chip_locked)
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = if (isEditing) Icons.Default.Edit else Icons.Default.Lock,
+                            contentDescription = null, // decorative
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                )
+            }
+
             Row (
                 modifier = Modifier
                     .fillMaxWidth()
@@ -150,6 +183,7 @@ fun Cardfolio() {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
+                    enabled = isEditing,
                     label = { Text(stringResource(id = R.string.card_name_label)) },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                     modifier = Modifier.fillMaxWidth()
@@ -157,6 +191,7 @@ fun Cardfolio() {
                 OutlinedTextField(
                     value = hobby,
                     onValueChange = { hobby = it },
+                    enabled = isEditing,
                     label = { Text(stringResource(id = R.string.card_hobby_label)) },
                     leadingIcon = { Icon(Icons.Default.Favorite, contentDescription = null) },
                     modifier = Modifier.fillMaxWidth()
@@ -169,14 +204,52 @@ fun Cardfolio() {
                             age = input
                         }
                     },
+                    enabled = isEditing,
                     label = { Text(stringResource(id = R.string.card_age_label)) },
                     leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    supportingText = {
+
+                        if(isEditing) Text(stringResource(id = R.string.age_warning))
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    // Edit button
+                    OutlinedButton(
+                        onClick = { isEditing = true },
+                        enabled = !isEditing // disabled if already editing
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(id = R.string.button_edit)
+                        )
+                        Text(stringResource(id = R.string.button_edit))
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    // Show button
+                    Button(
+                        onClick = { isEditing = false },
+                        enabled = isEditing // only enabled in editing mode
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = stringResource(id = R.string.button_show)
+                        )
+                        Text(stringResource(id = R.string.button_show))
+                    }
+                }
+
             }
 
         }
+
     }
 
 
