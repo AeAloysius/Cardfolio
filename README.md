@@ -2,6 +2,9 @@
 
 Cardfolio: a from-scratch, editable “personal card” app that covers input fields, state management, button interactions, Toast feedback, and a themed gradient background—delivering a complete UI flow.
 
+## Demo video
+https://youtu.be/HJY5hCqXXGQ
+
 ## Layout Framework & Card Composition
 •	Structured the UI with ElevatedCard plus Row/Column/Box: circular avatar on the left, information area on the right.
 •	Used Modifier (padding, weight, fillMaxWidth, clip, border, etc.) for responsive layout and clear visual hierarchy.
